@@ -28,7 +28,7 @@ find_package(OpenCV REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES mine_vision
+  #LIBRARIES mine_vision
   CATKIN_DEPENDS cv_bridge image_transport roscpp rospy std_msgs message_runtime message_generation
   #DEPENDS system_lib
 )

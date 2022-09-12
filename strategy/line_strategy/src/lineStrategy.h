@@ -34,6 +34,8 @@ private:
     ros::Subscriber line_right_sub_;
     ros::Publisher walk_pub_;
     ros::Publisher command_pub_;
+    ros::Publisher command_pub_2;
+
     int img_width,img_height;
     vector<Point> left,right;
     //通过传入的数据得到的梯形上下边线的中点
@@ -53,6 +55,10 @@ public:
     int dis;
     //自定消息
     briker_strategy::WalkingParam next_move;
+    //
+    std_msgs::Int16 command;
+    std_msgs::Int16 command2;
+
     lineStrategy();
     ~lineStrategy();
     //主进程

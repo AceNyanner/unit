@@ -5,8 +5,8 @@ MineDetector::MineDetector():
     it_(this->nh_),
     capture(0)
 {
-    img_pub_=it_.advertise("vision/mine/image_output",1);
-    target_pub=nh_.advertise<mine_vision::Rect>("vision/mine/target_info",20);
+    img_pub_=it_.advertise("image_output",1);
+    target_pub=nh_.advertise<mine_vision::Rect>("target_info",20);
     
     //获取外部参数
     ros::param::get("thre_h_min_1",thre_h_min_1);

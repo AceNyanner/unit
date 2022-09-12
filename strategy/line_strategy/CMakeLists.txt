@@ -14,8 +14,8 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(OpenCV REQUIRED)
 catkin_package(
-  INCLUDE_DIRS include ${vision_INCLUDE_DIRS} 
-  LIBRARIES ${PROJECT_NAME} ${vision_LIBRARIES}
+  #INCLUDE_DIRS include ${vision_INCLUDE_DIRS} 
+  #LIBRARIES ${PROJECT_NAME} ${vision_LIBRARIES}
   CATKIN_DEPENDS cv_bridge image_transport roscpp rospy std_msgs message_runtime
 #  DEPENDS system_lib
 )

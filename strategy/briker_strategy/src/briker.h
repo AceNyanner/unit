@@ -9,6 +9,8 @@
 #include <std_msgs/Int32.h>
 #include "strategy.h"
 #include "briker_strategy/WalkingParam.h"
+#include "square_vision/Square.h"
+#include "square_vision/Destination.h"
 
 #define _CATCH 1
 #define _UP 2
@@ -65,10 +67,15 @@ namespace unit
         ros::Subscriber distance_sub_;
         ros::Publisher walk_pub_;
         ros::Publisher arm_pub_;
-
+        ros::Publisher command_pub_;
+        ros::Publisher command_pub_2;
+        ros::Publisher command_pub_3;
         briker_strategy::WalkingParam next_move;
         std_msgs::Int16 next_mode;
-
+        std_msgs::Int16 command;
+        std_msgs::Int16 command2;//run start
+        std_msgs::Int16 command3;//arm start
+        
         int process_mode,premode;
         int x1,y1,x2,y2,dis;
         int SPIN_RATE;

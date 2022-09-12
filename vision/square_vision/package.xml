@@ -3,8 +3,9 @@
   <name>square_vision</name>
   <version>0.0.0</version>
   <description>The square_vision package</description>
-
+  <license>TODO</license>
   <maintainer email="zhang@todo.todo">zhang</maintainer>
+
   <buildtool_depend>catkin</buildtool_depend>
 <depend>cv_bridge</depend>
   <depend>image_transport</depend>

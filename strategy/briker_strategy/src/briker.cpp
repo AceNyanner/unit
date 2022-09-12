@@ -6,12 +6,14 @@ namespace unit
     :   SPIN_RATE(30)
     {
         ros::NodeHandle nh(ros::this_node::getName());
-        startMode();
         boost::thread point_thread=boost::thread(boost::bind(&car::pointThread,this));
-        //boost::thread process_thread=boost::thread(boost::bind(&car::processThread,this));
-        boost::thread distance_thread=boost::thread(boost::bind(&car::distanceThread,this));
         walk_pub_=nh.advertise<briker_strategy::WalkingParam>("walkParam",100);
         arm_pub_=nh.advertise<std_msgs::Int16>("armMode",100);
+        command_pub_=nh.advertise<std_msgs::Int16>("command",1);
+        command_pub_2=nh.advertise<std_msgs::Int16>("command2",1);
+        startMode();
+        //boost::thread process_thread=boost::thread(boost::bind(&car::processThread,this));
+        boost::thread distance_thread=boost::thread(boost::bind(&car::distanceThread,this));
     }
 
     car::~car(){}
@@ -93,10 +95,14 @@ namespace unit
 
      void car::startMode()
     {
-
+        ros::NodeHandle nh(ros::this_node::getName());
         process_mode=SEARCH;
         premode=SEARCH;
-        ROS_INFO("hello world");
+        ROS_INFO("start!");
+        command.data=1;
+        command_pub_.publish(command);
+        command2.data=2;
+        command_pub_2.publish(command2);
     }
 
     void car::search()
@@ -175,6 +181,8 @@ namespace unit
 
     void car::downArm()
     {
+        command3.data=3;
+        command_pub_3.publish(command3);
         setArmMode(_DOWN);
         usleep(300*1000);
         premode=DOWNARM;
@@ -199,7 +207,7 @@ namespace unit
 
     void car::stop()
     {
-        std::cout<<"mission completed";
+        ROS_INFO("mission completed");
     }
 
     void car::turn()
@@ -226,9 +234,7 @@ namespace unit
 
     void car::setArmMode(int mode)
     {
-        std_msgs::Int16 msg;
-        msg.data=mode;
-        next_mode=msg;
+        next_mode.data=mode;
         arm_pub_.publish(next_mode);
     }
 } 

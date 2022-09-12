@@ -82,7 +82,7 @@ lineStrategy::lineStrategy():
     line_right_sub_=nh_.subscribe<line_vision::Line>("/line_vision_node/vision/line/rightline",1,&lineStrategy::rightCallback,this);
     walk_pub_=nh_.advertise<briker_strategy::WalkingParam>("walkParam",100);
     command_pub_=nh_.advertise<std_msgs::Int16>("command",100);
-
+    command_pub_2=nh_.advertise<std_msgs::Int16>("command2",100);
     publisherCommand();
 }
 
@@ -135,6 +135,8 @@ void lineStrategy::publisherCommand()
     std_msgs::Int16 msg;
     msg.data=1;
     command_pub_.publish(msg);
+    msg.data=2;
+    command_pub_2.publish(msg);
 }
 void lineStrategy::stop()
 {

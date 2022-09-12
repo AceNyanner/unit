@@ -6,7 +6,7 @@ int main(int argc,char **argv)
 {
     ros::init(argc,argv,"unit_work");
     ros::NodeHandle nh;
-    //ros::start();
+    ros::start();
     unit::car Car;
     ros::Rate loop_rate(30);
     //Car.position_sub_=nh.subscribe<std_msgs::StringConstPtr>("pointParam",1000,&car::pointCallback);
