@@ -1,12 +1,14 @@
 #include "lineStrategy.h"
 
+#include<cmath>
+
 namespace line {
 
 void lineStrategy::imageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
     img_height = msg->height;
     img_width = msg->width;
-    ROS_INFO("img_height: %d\nimg_width: %d",img_height,img_width);
+    //ROS_INFO("img_height: %d\nimg_width: %d",img_height,img_width);
     return;
 }
 
@@ -20,7 +22,7 @@ void lineStrategy::leftCallback(const line_vision::Line::ConstPtr& msg)
     tmp.x = msg->bottomPoint.x;
     tmp.y = msg->bottomPoint.y;
     left.push_back(tmp);
-    ROS_INFO("leftCallback running");
+    //ROS_INFO("leftCallback running");
     return;
 }
 
@@ -34,21 +36,23 @@ void lineStrategy::rightCallback(const line_vision::Line::ConstPtr& msg)
     tmp.x = msg->bottomPoint.x;
     tmp.y = msg->bottomPoint.y;
     right.push_back(tmp);
-    ROS_INFO("rightCallback running");
+    //ROS_INFO("rightCallback running");
     return;
 }
 
 void lineStrategy::process()
 {
-
-    // testINFO();
-    // ROS_INFO("process running");
-    return;
-}
-
-void lineStrategy::adjustDirection()
-{
+    setWalkingParam(0,0,0,0,0,0);
+    if(process_mode==ADJUSTTOWARD)
+        adjustToward();
+    else if(process_mode==WALK_FAR)
+        walkFar();
+    else if(process_mode==WALK_ACCURATE)
+        walkAccurate();
+    else if(process_mode==STOP)
+        stop();
     
+    return;
 }
 
 void lineStrategy::testINFO()
@@ -71,13 +75,71 @@ lineStrategy::lineStrategy():
     nh_(ros::this_node::getName()),
     it_(this->nh_)
 {   
+    process_mode=ADJUSTTOWARD;
+    premode=ADJUSTTOWARD;
     img_sub_ = it_.subscribe("/line_vision_node/vision/line/image_output",1,&lineStrategy::imageCallback,this);
     line_left_sub_=nh_.subscribe<line_vision::Line>("/line_vision_node/vision/line/leftline",1,&lineStrategy::leftCallback,this);
     line_right_sub_=nh_.subscribe<line_vision::Line>("/line_vision_node/vision/line/rightline",1,&lineStrategy::rightCallback,this);
-    
+    walk_pub_=nh_.advertise<briker_strategy::WalkingParam>("walkParam",100);
+    command_pub_=nh_.advertise<std_msgs::Int16>("command",100);
+
+    publisherCommand();
 }
 
+void lineStrategy::adjustToward()
+{
+    if(left.size()&&right.size())
+    {
+        //根据中线两点像素位置计算角度，这样显然是不准确的后面根据实际再调整
+        m_top_center=Point((left[0].x+right[0].x)/2,(left[0].y+right[0].y)/2);
+        m_bottom_center=Point((left[1].x+right[1].x)/2,(left[1].y+right[1].y)/2);
+        int d=m_bottom_center.x-img_width/2;
+        int m_target_x = m_top_center.x-d;
+        int m_target_y = m_bottom_center.y-m_bottom_center.y;
+        int m_degree = atan(m_target_x/m_target_y)*180/CV_PI;//角度
+        setWalkingParam(0,0,0,0,0,0);
+    }else {
+        ROS_INFO("error, no points");
+    }
+}
 
+void lineStrategy::walkFar()
+{
+    setWalkingParam(0,0,0,0,0,0);
+    usleep(300*1000);
+    premode=WALK_FAR;
+    process_mode=ADJUSTTOWARD;
+}
+
+void lineStrategy::walkAccurate()
+{
+    setWalkingParam(0,0,0,0,0,0);
+    usleep(300*1000);
+    premode=WALK_ACCURATE;
+    process_mode=ADJUSTTOWARD;
+}
+
+ void lineStrategy::setWalkingParam(int x_move,int y_move,int angle,int x_speed,int y_speed,int angle_speed)
+    {
+        next_move.x_move=x_move;
+        next_move.y_move=y_move;
+        next_move.angle=angle;
+        next_move.x_speed=x_speed;
+        next_move.y_speed=y_speed;
+        next_move.angle_speed=angle_speed;
+        walk_pub_.publish(next_move);
+    }
+
+void lineStrategy::publisherCommand()
+{
+    std_msgs::Int16 msg;
+    msg.data=1;
+    command_pub_.publish(msg);
+}
+void lineStrategy::stop()
+{
+    
+}
 
 lineStrategy::~lineStrategy()
 {
