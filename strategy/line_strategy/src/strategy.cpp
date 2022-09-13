@@ -22,7 +22,8 @@ void lineStrategy::leftCallback(const line_vision::Line::ConstPtr& msg)
     tmp.x = msg->bottomPoint.x;
     tmp.y = msg->bottomPoint.y;
     left.push_back(tmp);
-    //ROS_INFO("leftCallback running");
+    // ROS_INFO("leftCallback running");
+    // ROS_INFO("%lf",msg->topPoint.x);
     return;
 }
 
@@ -42,6 +43,7 @@ void lineStrategy::rightCallback(const line_vision::Line::ConstPtr& msg)
 
 void lineStrategy::process()
 {
+
     setWalkingParam(0,0,0,0,0,0);
     if(process_mode==ADJUSTTOWARD)
         adjustToward();
@@ -93,10 +95,12 @@ void lineStrategy::adjustToward()
         //根据中线两点像素位置计算角度，这样显然是不准确的后面根据实际再调整
         m_top_center=Point((left[0].x+right[0].x)/2,(left[0].y+right[0].y)/2);
         m_bottom_center=Point((left[1].x+right[1].x)/2,(left[1].y+right[1].y)/2);
-        int d=m_bottom_center.x-img_width/2;
-        int m_target_x = m_top_center.x-d;
-        int m_target_y = m_bottom_center.y-m_bottom_center.y;
-        int m_degree = atan(m_target_x/m_target_y)*180/CV_PI;//角度
+        double d=m_bottom_center.x-img_width/2;
+        double m_target_x = m_top_center.x-d;
+        double m_target_y = m_bottom_center.y-m_top_center.y;
+        double m_degree = atan(m_target_x/m_target_y)*180/CV_PI;//角度
+        ROS_INFO("m_target: x:%lf y:%lf",m_target_x,m_target_y);
+        ROS_INFO("m_degree: %lf",m_degree);
         setWalkingParam(0,0,0,0,0,0);
     }else {
         ROS_INFO("error, no points");

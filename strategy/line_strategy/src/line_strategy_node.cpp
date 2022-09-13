@@ -14,6 +14,7 @@ int main(int argc, char** argv)
     while (ros::ok())
     {
         strategy.process();
+        strategy.testINFO();
         ros::spinOnce();
         loop_rate.sleep();
     }
